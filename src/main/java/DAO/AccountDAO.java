@@ -22,10 +22,6 @@ public class AccountDAO {
                 password varchar(255)
             );
         */
-
-        if (account.getUsername().length() == 0 || account.getPassword().length() < 4) {
-            return null;
-        }
         
         try {
             // SQL logic
@@ -89,5 +85,23 @@ public class AccountDAO {
             System.out.println(e.getMessage());
         }
         return null;
+    }
+
+    public boolean usernameExists(int account_id) {
+        Connection connection = ConnectionUtil.getConnection();
+
+        try {
+            // SQL logic
+            String sql = "select * from account where account_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, account_id);
+            ResultSet rs = preparedStatement.executeQuery();
+            if (!rs.isBeforeFirst()) { 
+                return false;
+            }
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
     }
 }

@@ -18,6 +18,9 @@ public class AccountService {
     }
 
     public Account registerAccount(Account account) {
+        if (account.getUsername().length() == 0 || account.getPassword().length() < 4) {
+            return null;
+        }
         return this.accountDAO.registerAccount(account);
     }
 
@@ -25,5 +28,7 @@ public class AccountService {
         return this.accountDAO.logIntoAccount(account);
     }
 
-    
+    public boolean usernameExists(int account_id) {
+        return this.accountDAO.usernameExists(account_id);
+    }
 }

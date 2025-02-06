@@ -98,12 +98,12 @@ public class MessageDAO {
                 foreign key (posted_by) references  account(account_id)
             );
         */
-
         try {
             // SQL logic
-            String sql = "select * from message where posted_by = ?;";
+            String sql = "select * from message where posted_by = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, account_id);
+            System.out.println(account_id);
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
                 Message message = new Message(rs.getInt("message_id"), rs.getInt("posted_by"), rs.getString("message_text"), rs.getLong("time_posted_epoch"));
@@ -112,6 +112,7 @@ public class MessageDAO {
         } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
+
         return messages;
     }
 
@@ -142,25 +143,37 @@ public class MessageDAO {
         return null;
     }
 
-    public Message updateMessage(Message message){
+    public Message updateMessage(int message_id, Message message){
+        Message messageToBeUpdated = this.getMessageByID(message_id);
         Connection connection = ConnectionUtil.getConnection();
+        System.out.println(message_id);
+        System.out.println(message);
         try {
 //          Write SQL logic here. You should only be inserting with the name column, so that the database may
 //          automatically generate a primary key.
-            String sql = "update message set posted_by = ?, message_text = ?, time_posted_epoch = ? where message_id = ?;" ;
+            String sql = "update message set message_text = ? where message_id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            //write preparedStatement's setString method here.
-            preparedStatement.setInt(1, message.getPosted_by());
-            preparedStatement.setString(2, message.getMessage_text());
-            preparedStatement.setFloat(3, message.getTime_posted_epoch());
-            preparedStatement.setInt(4, message.getMessage_id());
+            /*
+            create table message (
+                message_id int primary key auto_increment,
+                posted_by int,
+                message_text varchar(255),
+                time_posted_epoch bigint,
+                foreign key (posted_by) references  account(account_id)
+            );
+        */
 
-            preparedStatement.executeUpdate();
-            ResultSet pkeyResultSet = preparedStatement.getGeneratedKeys();
-            if(pkeyResultSet.next()){
-                int generated_message_id = (int) pkeyResultSet.getLong(1);
-                return new Message(generated_message_id, pkeyResultSet.getInt(2), pkeyResultSet.getString(3), pkeyResultSet.getInt(4));
+            //write preparedStatement's setString method here.
+            preparedStatement.setString(1, message.getMessage_text());
+            preparedStatement.setInt(2, message_id);
+
+            int updatedRow = preparedStatement.executeUpdate();
+            if(updatedRow == 1){
+                System.out.println(new Message(message_id, messageToBeUpdated.getPosted_by(), message.getMessage_text(), messageToBeUpdated.getTime_posted_epoch()));
+                return new Message(message_id, messageToBeUpdated.getPosted_by(), message.getMessage_text(), messageToBeUpdated.getTime_posted_epoch());
+            } else {
+                return null;
             }
         } catch(SQLException e){
             System.out.println(e.getMessage());
@@ -170,22 +183,26 @@ public class MessageDAO {
 
     public Message deleteMessage(int message_id){
         Connection connection = ConnectionUtil.getConnection();
+
+        Message messageToBeDeleted = this.getMessageByID(message_id);
         try {
 //          Write SQL logic here. You should only be inserting with the name column, so that the database may
 //          automatically generate a primary key.
-            String sql = "delete from message where message_id = ?;" ;
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            String sql = "delete from message where message_id = ?" ;
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             //write preparedStatement's setString method here.
             preparedStatement.setInt(1, message_id);
 
-            preparedStatement.executeUpdate();
-            ResultSet pkeyResultSet = preparedStatement.getGeneratedKeys();
-            if(pkeyResultSet.next()){
-                int generated_message_id = (int) pkeyResultSet.getLong(1);
-                return new Message(generated_message_id, pkeyResultSet.getInt(2), pkeyResultSet.getString(3), pkeyResultSet.getInt(4));
+            int deletedRow = preparedStatement.executeUpdate();
+            System.out.println(deletedRow);
+            if(deletedRow == 1){
+                return messageToBeDeleted;
+            } else {
+                return null;
             }
         } catch(SQLException e){
+            System.out.println("AN ERROR OCCURRED!");
             System.out.println(e.getMessage());
         }
         return null;
