@@ -20,7 +20,7 @@ public class MessageService {
     }
 
     public Message addMessage(Message message) {
-        return message;
+        return this.messageDAO.insertMessage(message);
     }
 
     public List<Message> getAllMessages() {
@@ -31,7 +31,7 @@ public class MessageService {
         return this.messageDAO.getMessageByID(message_id);
     }
 
-    public Message updateMessageByID(Message message) {
+    public Message updateMessage(Message message) {
         return this.messageDAO.updateMessage(message);
     }
 

@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
+import java.util.List;
+
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
  * found in readme.md as well as the test cases. You should
@@ -116,8 +118,16 @@ public class SocialMediaController {
      * This is the handler for posting a message.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      */
-    private void postMessageHandler(Context context) {
-        context.json("sample text");
+    private void postMessageHandler(Context context) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Message message = mapper.readValue(context.body(), Message.class);
+        Message sentMessage = this.messageService.addMessage(message);
+        if (sentMessage != null) {
+            context.json(mapper.writeValueAsString(sentMessage));
+            context.status(200);
+        } else {
+            context.status(400);
+        }
     }
 
     /**
@@ -125,38 +135,65 @@ public class SocialMediaController {
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      */
     private void getAllMessagesHandler(Context context) {
-        context.json("sample text");
+        List<Message> messages = this.messageService.getAllMessages();
+        context.json(messages);
+        context.status(200);
     }
 
     /**
      * This is the handler for retrieving a message.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      */
-    private void getMessageHandler(Context context) {
-        context.json("sample text");
+    private void getMessageHandler(Context context) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        int message_id = mapper.readValue(context.body(), Integer.class);
+        Message sentMessage = this.messageService.getMessageByID(message_id);
+        if (sentMessage != null) {
+            context.json(mapper.writeValueAsString(sentMessage));
+        }
+        context.status(200);
     }
 
     /**
      * This is the handler for retrieving all messages from an account.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      */
-    private void getAllMessagesByAccountHandler(Context context) {
-        context.json("sample text");
+    private void getAllMessagesByAccountHandler(Context context) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        int account_id = mapper.readValue(context.body(), Integer.class);
+        List<Message> messagesByAccountID = this.messageService.getMessagesByAccountID(account_id);
+        context.json(messagesByAccountID);
+        context.status(200);
     }
 
     /**
      * This is the handler for deleting a message.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      */
-    private void deleteMessageHandler(Context context) {
-        context.json("sample text");
+    private void deleteMessageHandler(Context context) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        int message_id = mapper.readValue(context.body(), Integer.class);
+        Message deletedMessage = this.messageService.deleteMessage(message_id);
+        if (deletedMessage != null) {
+            context.json(mapper.writeValueAsString(deletedMessage));
+        }
+        context.status(200);
     }
 
     /**
      * This is the handler for updating a message.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      */
-    private void updateMessageHandler(Context context) {
-        context.json("sample text");
+    private void updateMessageHandler(Context context) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Message message = mapper.readValue(context.body(), Message.class);
+        Message updatedMessage = this.messageService.updateMessage(message);
+        if (updatedMessage != null) {
+            context.json(mapper.writeValueAsString(updatedMessage));
+            context.status(200);
+        } else {
+            context.status(400);
+        }
+
     }
 }
