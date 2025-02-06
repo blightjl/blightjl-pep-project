@@ -143,4 +143,53 @@ public class MessageDAO {
         return null;
     }
 
+    public Message updateMessage(Message message){
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+//          Write SQL logic here. You should only be inserting with the name column, so that the database may
+//          automatically generate a primary key.
+            String sql = "update message set posted_by = ?, message_text = ?, time_posted_epoch = ? where message_id = ?;" ;
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            //write preparedStatement's setString method here.
+            preparedStatement.setInt(1, message.getPosted_by());
+            preparedStatement.setString(2, message.getMessage_text());
+            preparedStatement.setFloat(3, message.getTime_posted_epoch());
+            preparedStatement.setInt(4, message.getMessage_id());
+
+            preparedStatement.executeUpdate();
+            ResultSet pkeyResultSet = preparedStatement.getGeneratedKeys();
+            if(pkeyResultSet.next()){
+                int generated_message_id = (int) pkeyResultSet.getLong(1);
+                return new Message(generated_message_id, pkeyResultSet.getInt(2), pkeyResultSet.getString(3), pkeyResultSet.getInt(4));
+            }
+        } catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public Message deleteMessage(int message_id){
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+//          Write SQL logic here. You should only be inserting with the name column, so that the database may
+//          automatically generate a primary key.
+            String sql = "delete from message where message_id = ?;" ;
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            //write preparedStatement's setString method here.
+            preparedStatement.setInt(1, message_id);
+
+            preparedStatement.executeUpdate();
+            ResultSet pkeyResultSet = preparedStatement.getGeneratedKeys();
+            if(pkeyResultSet.next()){
+                int generated_message_id = (int) pkeyResultSet.getLong(1);
+                return new Message(generated_message_id, pkeyResultSet.getInt(2), pkeyResultSet.getString(3), pkeyResultSet.getInt(4));
+            }
+        } catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
 }
