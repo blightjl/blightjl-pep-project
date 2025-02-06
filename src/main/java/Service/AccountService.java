@@ -22,7 +22,7 @@ public class AccountService {
     }
 
     public Account logIntoAccount(Account account) {
-        return this.accountDAO.registerAccount(account);
+        return this.accountDAO.logIntoAccount(account);
     }
 
     

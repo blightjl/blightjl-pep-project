@@ -23,7 +23,7 @@ public class AccountDAO {
             );
         */
 
-        if (account.getUsername().length() < 4) {
+        if (account.getUsername().length() == 0 || account.getPassword().length() < 4) {
             return null;
         }
         
@@ -35,14 +35,23 @@ public class AccountDAO {
             ResultSet rs = preparedStatement.executeQuery();
             if (!rs.isBeforeFirst()) {
                 String sql_2 = "insert into account(username, password) values (?, ?)";
-                PreparedStatement preparedStatement_2 = connection.prepareStatement(sql_2);
+                PreparedStatement preparedStatement_2 = connection.prepareStatement(sql_2, Statement.RETURN_GENERATED_KEYS);
                 preparedStatement_2.setString(1, account.getUsername());
-                preparedStatement_2.executeUpdate();
-                ResultSet pkeyResultSet = preparedStatement_2.getGeneratedKeys();
-                if(pkeyResultSet.next()){
-                    int generated_account_id = (int) pkeyResultSet.getLong(1);
-                    return new Account(generated_account_id, account.getUsername(), account.getPassword());
+                preparedStatement_2.setString(2, account.getPassword());
+                int updatedRows = preparedStatement_2.executeUpdate();
+                if (updatedRows != 1) {
+                    System.out.println("Failed to register an account!");
+                } else {
+                    System.out.println("Registered an account!");
+                    ResultSet pkeyResultSet = preparedStatement_2.getGeneratedKeys();
+                    System.out.println("before pkeyresultset!");
+                    if(pkeyResultSet.next()){
+                        int generated_account_id = (int) pkeyResultSet.getLong(1);
+                        System.out.println(generated_account_id);
+                        return new Account(generated_account_id, account.getUsername(), account.getPassword());
+                    }
                 }
+                System.out.println("after pkeyresultset!");
             } else {
                 return null;
             }

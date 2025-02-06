@@ -32,7 +32,12 @@ public class MessageService {
     }
 
     public Message updateMessage(Message message) {
-        return this.messageDAO.updateMessage(message);
+        Message messageToBeUpdated = this.messageDAO.getMessageByID(message.getMessage_id());
+        if (messageToBeUpdated != null) {
+            this.messageDAO.updateMessage(message);
+            return this.messageDAO.getMessageByID(message.getMessage_id());
+        }
+        return null;
     }
 
     public Message deleteMessage(int message_id) {
