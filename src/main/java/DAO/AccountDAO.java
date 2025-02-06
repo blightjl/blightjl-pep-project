@@ -11,5 +11,74 @@ import java.util.List;
  * For DAOs, only CR from CRUD should be accessible.
  */
 public class AccountDAO {
-    
+
+    public Account registerAccount(Account account) {
+        Connection connection = ConnectionUtil.getConnection();
+
+        /*
+            create table account (
+                account_id int primary key auto_increment,
+                username varchar(255) unique,
+                password varchar(255)
+            );
+        */
+
+        if (account.getUsername().length() < 4) {
+            return null;
+        }
+        
+        try {
+            // SQL logic
+            String sql = "select * from account where username = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, account.getUsername());
+            ResultSet rs = preparedStatement.executeQuery();
+            if (!rs.isBeforeFirst()) {
+                String sql_2 = "insert into account(username, password) values (?, ?)";
+                PreparedStatement preparedStatement_2 = connection.prepareStatement(sql_2);
+                preparedStatement_2.setString(1, account.getUsername());
+                preparedStatement_2.executeUpdate();
+                ResultSet pkeyResultSet = preparedStatement_2.getGeneratedKeys();
+                if(pkeyResultSet.next()){
+                    int generated_account_id = (int) pkeyResultSet.getLong(1);
+                    return new Account(generated_account_id, account.getUsername(), account.getPassword());
+                }
+            } else {
+                return null;
+            }
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public Account logIntoAccount(Account account) {
+        Connection connection = ConnectionUtil.getConnection();
+
+        /*
+            create table account (
+                account_id int primary key auto_increment,
+                username varchar(255) unique,
+                password varchar(255)
+            );
+        */
+        
+        try {
+            // SQL logic
+            String sql = "select * from account where username = ? and password = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, account.getUsername());
+            preparedStatement.setString(2, account.getPassword());
+            ResultSet rs = preparedStatement.executeQuery();
+            if (!rs.isBeforeFirst()) { 
+                return null;
+            }
+            if (rs.next()) {
+                return new Account(rs.getInt("account_id"), rs.getString("username"), rs.getString("password"));
+            }
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
 }

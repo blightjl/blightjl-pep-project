@@ -3,6 +3,8 @@ package Service;
 import DAO.MessageDAO;
 import Model.Message;
 
+import java.util.List;
+
 /*
  * Sits between the Controller and the DAO. It calls DAO objects.
  */
@@ -26,18 +28,18 @@ public class MessageService {
     }
 
     public Message getMessageByID(int message_id) {
-        return this.messageDAO.getMessageByID();
+        return this.messageDAO.getMessageByID(message_id);
     }
 
-    public Message updateMessageByID(int message_id) {
-        return this.messageDAO.updateMessageByID();
+    public Message updateMessageByID(Message message) {
+        return this.messageDAO.updateMessage(message);
     }
 
-    public Message deleteMessageByID(int message_id) {
-        return this.messageDAO.deleteMessageByID();
+    public Message deleteMessage(int message_id) {
+        return this.messageDAO.deleteMessage(message_id);
     }
 
     public List<Message> getMessagesByAccountID(int account_id) {
-        return this.messageDAO.getMessagesByAccountID();
+        return this.messageDAO.getAllMessagesByAccountID(account_id);
     }
 }

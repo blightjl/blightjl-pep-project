@@ -53,7 +53,6 @@ public class MessageDAO {
      */
     public Message getMessageByID(int message_id) {
         Connection connection = ConnectionUtil.getConnection();
-        List<Message> messages = new ArrayList<>();
 
         /*
             create table message (
@@ -73,7 +72,7 @@ public class MessageDAO {
             ResultSet rs = preparedStatement.executeQuery();
             if (rs.next()) {
                 Message message = new Message(rs.getInt("message_id"), rs.getInt("posted_by"), rs.getString("message_text"), rs.getLong("time_posted_epoch"));
-                messages.add(message);
+                return message;
             }
         } catch(SQLException e) {
             System.out.println(e.getMessage());
