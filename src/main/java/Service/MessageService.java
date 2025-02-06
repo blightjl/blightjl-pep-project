@@ -36,4 +36,8 @@ public class MessageService {
     public Message deleteMessageByID(int message_id) {
         return this.messageDAO.deleteMessageByID();
     }
+
+    public List<Message> getMessagesByAccountID(int account_id) {
+        return this.messageDAO.getMessagesByAccountID();
+    }
 }

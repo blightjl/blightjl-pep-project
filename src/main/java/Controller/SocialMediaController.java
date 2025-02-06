@@ -24,7 +24,6 @@ public class SocialMediaController {
          */
         app.post("/register", this::postAccountHandler);
         app.post("/login", this::loginAccountHandler);
-        app.get("/accounts/{account_id}", this::getAllAccountsHandler);
 
         /*
          * Ordered top-down in the order of CRUD operations.
@@ -32,6 +31,7 @@ public class SocialMediaController {
         app.post("/messages", this::postMessageHandler);
         app.get("/messages", this::getAllMessagesHandler);
         app.get("/messages/{message_id}", this::getMessageHandler);
+        app.get("/accounts/{account_id}", this::getAllMessagesByAccountHandler);
         app.patch("/messages/{message_id}", this::updateMessageHandler);
         app.delete("/messages/{message_id}", this::deleteMessageHandler);
 
@@ -87,6 +87,14 @@ public class SocialMediaController {
     }
 
     /**
+     * This is the handler for retrieving all messages from an account.
+     * @param context The Javalin Context object manages information about both the HTTP request and response.
+     */
+    private void getAllMessagesByAccountHandler(Context context) {
+        context.json("sample text");
+    }
+
+    /**
      * This is the handler for deleting a message.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      */
@@ -99,14 +107,6 @@ public class SocialMediaController {
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      */
     private void updateMessageHandler(Context context) {
-        context.json("sample text");
-    }
-
-    /**
-     * This is the handler for retrieving all accounts.
-     * @param context The Javalin Context object manages information about both the HTTP request and response.
-     */
-    private void getAllAccountsHandler(Context context) {
         context.json("sample text");
     }
 }
