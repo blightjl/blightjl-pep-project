@@ -17,20 +17,12 @@ public class AccountService {
         this.accountDAO = accountDAO;
     }
 
-    public int registerAccount(Account account) {
-        Account registeredAccount = this.accountDAO.registerAccount(account);
-        if (registeredAccount != null) {
-            return 200;
-        }
-        return 400;
+    public Account registerAccount(Account account) {
+        return this.accountDAO.registerAccount(account);
     }
 
-    public int logIntoAccount(Account account) {
-        Account loggedAccount = this.accountDAO.registerAccount(account);
-        if (loggedAccount != null) {
-            return 200;
-        }
-        return 401;
+    public Account logIntoAccount(Account account) {
+        return this.accountDAO.registerAccount(account);
     }
 
     
