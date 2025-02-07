@@ -7,12 +7,14 @@ import java.sql.*;
 
 /*
  * For DAOs, only CR from CRUD should be accessible.
+ * 
+ * The AccountDAO class that contains methods to directly manipulate the database.
  */
 public class AccountDAO {
 
     /**
      * Creates an account and inserts it into the database if the username contained in the
-     * Account does not already exist in the database. 
+     * Account does not already exist in the database through a prepared statement. 
      * @param account the account to be registered
      * @return the registered account if successful, null otherwise.
      */
@@ -30,7 +32,6 @@ public class AccountDAO {
                 ResultSet pkeyResultSet = preparedStatement_2.getGeneratedKeys();
                 if(pkeyResultSet.next()){
                     int generated_account_id = (int) pkeyResultSet.getLong(1);
-                    System.out.println(generated_account_id);
                     return new Account(generated_account_id, account.getUsername(), account.getPassword());
                 }
             }
@@ -69,9 +70,13 @@ public class AccountDAO {
     }
 
     /**
-     * Checks if the username exists in the database or not.
+     * Checks if an account exists in the database or not by either the username or account id
+     * determined by the boolean value byUsername in the parameter.
      * @param username the username to be checked for whether it is in the database or not
-     * @return true if the username exists in the database, false otherwise
+     * @param account_id the account id to be checked for whether it is in the database or not
+     * @param byUsername if true, the account check is made by the username parameter, 
+     *                   if false, the account_id is used instead
+     * @return true if the account exists in the database, false otherwise
      */
     public boolean accountExists(String username, int account_id, boolean byUsername) {
         Connection connection = ConnectionUtil.getConnection();
