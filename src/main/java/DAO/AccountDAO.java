@@ -4,50 +4,37 @@ import Model.Account;
 import Util.ConnectionUtil;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /*
  * For DAOs, only CR from CRUD should be accessible.
  */
 public class AccountDAO {
 
+    /**
+     * Creates an account and inserts it into the database if the username contained in the
+     * Account does not already exist in the database. 
+     * @param account the account to be registered
+     * @return the registered account if successful, null otherwise.
+     */
     public Account registerAccount(Account account) {
         Connection connection = ConnectionUtil.getConnection();
-
-        /*
-            create table account (
-                account_id int primary key auto_increment,
-                username varchar(255) unique,
-                password varchar(255)
-            );
-        */
         
         try {
             // SQL logic
-            String sql = "select * from account where username = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, account.getUsername());
-            ResultSet rs = preparedStatement.executeQuery();
-            if (!rs.isBeforeFirst()) {
+            if (!accountExists(account.getUsername(), 0, true)) {
                 String sql_2 = "insert into account(username, password) values (?, ?)";
                 PreparedStatement preparedStatement_2 = connection.prepareStatement(sql_2, Statement.RETURN_GENERATED_KEYS);
                 preparedStatement_2.setString(1, account.getUsername());
                 preparedStatement_2.setString(2, account.getPassword());
                 int updatedRows = preparedStatement_2.executeUpdate();
-                if (updatedRows != 1) {
-                    System.out.println("Failed to register an account!");
-                } else {
-                    System.out.println("Registered an account!");
+                if (updatedRows == 1) {
                     ResultSet pkeyResultSet = preparedStatement_2.getGeneratedKeys();
-                    System.out.println("before pkeyresultset!");
                     if(pkeyResultSet.next()){
                         int generated_account_id = (int) pkeyResultSet.getLong(1);
                         System.out.println(generated_account_id);
                         return new Account(generated_account_id, account.getUsername(), account.getPassword());
                     }
                 }
-                System.out.println("after pkeyresultset!");
             } else {
                 return null;
             }
@@ -57,16 +44,14 @@ public class AccountDAO {
         return null;
     }
 
+    /**
+     * Logs into an account by checking if the provided account has the correct credentials.
+     * Returns the account if the account is authenticated, else returns null. 
+     * @param account the account to be logged into
+     * @return the registered account if successful, null otherwise.
+     */
     public Account logIntoAccount(Account account) {
         Connection connection = ConnectionUtil.getConnection();
-
-        /*
-            create table account (
-                account_id int primary key auto_increment,
-                username varchar(255) unique,
-                password varchar(255)
-            );
-        */
         
         try {
             // SQL logic
@@ -87,16 +72,33 @@ public class AccountDAO {
         return null;
     }
 
-    public boolean usernameExists(int account_id) {
+    /**
+     * Checks if the username exists in the database or not.
+     * @param username the username to be checked for whether it is in the database or not
+     * @return true if the username exists in the database, false otherwise
+     */
+    public boolean accountExists(String username, int account_id, boolean byUsername) {
         Connection connection = ConnectionUtil.getConnection();
 
         try {
             // SQL logic
-            String sql = "select * from account where account_id = ?";
+            StringBuilder sqlSB = new StringBuilder("select * from account where ");
+            if (byUsername) {
+                sqlSB.append("username = ?");
+            } else {
+                sqlSB.append("account_id = ?");
+            }
+            String sql = sqlSB.toString();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, account_id);
+            if (byUsername) {
+                sqlSB.append("username = ?");
+                preparedStatement.setString(1, username);
+            } else {
+                sqlSB.append("account_id = ?");
+                preparedStatement.setInt(1, account_id);
+            }
             ResultSet rs = preparedStatement.executeQuery();
-            if (!rs.isBeforeFirst()) { 
+            if (!rs.isBeforeFirst()) {
                 return false;
             }
             return true;

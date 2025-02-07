@@ -89,15 +89,6 @@ public class MessageDAO {
         Connection connection = ConnectionUtil.getConnection();
         List<Message> messages = new ArrayList<>();
 
-        /*
-            create table message (
-                message_id int primary key auto_increment,
-                posted_by int,
-                message_text varchar(255),
-                time_posted_epoch bigint,
-                foreign key (posted_by) references  account(account_id)
-            );
-        */
         try {
             // SQL logic
             String sql = "select * from message where posted_by = ?";
@@ -146,23 +137,11 @@ public class MessageDAO {
     public Message updateMessage(int message_id, Message message){
         Message messageToBeUpdated = this.getMessageByID(message_id);
         Connection connection = ConnectionUtil.getConnection();
-        System.out.println(message_id);
-        System.out.println(message);
         try {
 //          Write SQL logic here. You should only be inserting with the name column, so that the database may
 //          automatically generate a primary key.
             String sql = "update message set message_text = ? where message_id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-
-            /*
-            create table message (
-                message_id int primary key auto_increment,
-                posted_by int,
-                message_text varchar(255),
-                time_posted_epoch bigint,
-                foreign key (posted_by) references  account(account_id)
-            );
-        */
 
             //write preparedStatement's setString method here.
             preparedStatement.setString(1, message.getMessage_text());
@@ -202,10 +181,8 @@ public class MessageDAO {
                 return null;
             }
         } catch(SQLException e){
-            System.out.println("AN ERROR OCCURRED!");
             System.out.println(e.getMessage());
         }
         return null;
     }
-
 }

@@ -28,7 +28,8 @@ public class AccountService {
         return this.accountDAO.logIntoAccount(account);
     }
 
-    public boolean usernameExists(int account_id) {
-        return this.accountDAO.usernameExists(account_id);
+    // checks whether an account exists or not by either the username or the account_id
+    public boolean accountExists(String username, int account_id, boolean byUsername) {
+        return this.accountDAO.accountExists(username, account_id, byUsername);
     }
 }

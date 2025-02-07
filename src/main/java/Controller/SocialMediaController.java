@@ -215,6 +215,5 @@ public class SocialMediaController {
         } else {
             context.status(400);
         }
-
     }
 }

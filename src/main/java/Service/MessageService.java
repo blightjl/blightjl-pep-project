@@ -30,7 +30,7 @@ public class MessageService {
             return null;
         }
         // check the user attempting to message exists
-        if (!this.accountService.usernameExists(message.getPosted_by())) {
+        if (!this.accountService.accountExists("", message.getPosted_by(), false)) {
             return null;
         }
 
@@ -60,7 +60,6 @@ public class MessageService {
     }
 
     public Message deleteMessage(int message_id) {
-        System.out.println("DELETING A MESSAGE");
         return this.messageDAO.deleteMessage(message_id);
     }
 
