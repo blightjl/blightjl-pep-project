@@ -9,30 +9,20 @@ import java.util.List;
 
 /*
  * For DAOs, only CR from CRUD should be accessible.
+ * 
+ * The MessageDAO class that contains methods related to Messages to directly manipulate the database.
  */
 public class MessageDAO {
 
     /**
-     * TODO: retrieve all authors from the Author table.
-     * You only need to change the sql String.
-     * @return all Authors.
+     * Retrieves a list of all messages in the database through a prepared statement. 
+     * @return the list of messages in the database.
      */
     public List<Message> getAllMessages() {
         Connection connection = ConnectionUtil.getConnection();
         List<Message> messages = new ArrayList<>();
 
-        /*
-            create table message (
-                message_id int primary key auto_increment,
-                posted_by int,
-                message_text varchar(255),
-                time_posted_epoch bigint,
-                foreign key (posted_by) references  account(account_id)
-            );
-        */
-
         try {
-            // SQL logic
             String sql = "select * from message;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet rs = preparedStatement.executeQuery();
@@ -47,25 +37,13 @@ public class MessageDAO {
     }
 
     /**
-     * TODO: retrieve all authors from the Author table.
-     * You only need to change the sql String.
-     * @return all Authors.
+     * Retrieves a message by a message id in the database through a prepared statement. 
+     * @return the message associated with the message_id if it exists, null otherwise.
      */
     public Message getMessageByID(int message_id) {
         Connection connection = ConnectionUtil.getConnection();
-
-        /*
-            create table message (
-                message_id int primary key auto_increment,
-                posted_by int,
-                message_text varchar(255),
-                time_posted_epoch bigint,
-                foreign key (posted_by) references  account(account_id)
-            );
-        */
         
         try {
-            // SQL logic
             String sql = "select * from message where message_id = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, message_id);
@@ -81,9 +59,9 @@ public class MessageDAO {
     }
 
     /**
-     * TODO: retrieve all authors from the Author table.
-     * You only need to change the sql String.
-     * @return all Authors.
+     * Retrieves a list of all messages in the database associated with an account id 
+     * through a prepared statement. 
+     * @return a list of messages made by account id in the database.
      */
     public List<Message> getAllMessagesByAccountID(int account_id) {
         Connection connection = ConnectionUtil.getConnection();
@@ -103,19 +81,21 @@ public class MessageDAO {
         } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
-
         return messages;
     }
 
+    /**
+     * Inserts a message into the database through a prepared statement. 
+     * @param account the message object to be inserted {does not have a message id}.
+     * @return the message object with the generated message id if inserting .
+     *         is successful, null otherwise.
+     */
     public Message insertMessage(Message message){
         Connection connection = ConnectionUtil.getConnection();
         try {
-//          Write SQL logic here. You should only be inserting with the name column, so that the database may
-//          automatically generate a primary key.
             String sql = "insert into message(posted_by, message_text, time_posted_epoch) values (?, ?, ?);" ;
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            //write preparedStatement's setString method here.
             preparedStatement.setInt(1, message.getPosted_by());
 
             preparedStatement.setString(2, message.getMessage_text());
@@ -134,16 +114,19 @@ public class MessageDAO {
         return null;
     }
 
+    /**
+     * Updates a message in the database with the content of another message object.
+     * @param message_id the message id of the message object to be updated.
+     * @param message the message object that contains the new message content.
+     * @return the updated message object with the new message content if successful, null otherwise.
+     */
     public Message updateMessage(int message_id, Message message){
         Message messageToBeUpdated = this.getMessageByID(message_id);
         Connection connection = ConnectionUtil.getConnection();
         try {
-//          Write SQL logic here. You should only be inserting with the name column, so that the database may
-//          automatically generate a primary key.
             String sql = "update message set message_text = ? where message_id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            //write preparedStatement's setString method here.
             preparedStatement.setString(1, message.getMessage_text());
             preparedStatement.setInt(2, message_id);
 
@@ -160,17 +143,19 @@ public class MessageDAO {
         return null;
     }
 
+    /**
+     * Deletes a message identified by the message id in the database.
+     * @param message_id the message id of the message object to be deleted.
+     * @return the deleted message object if successful, null otherwise.
+     */
     public Message deleteMessage(int message_id){
         Connection connection = ConnectionUtil.getConnection();
 
         Message messageToBeDeleted = this.getMessageByID(message_id);
         try {
-//          Write SQL logic here. You should only be inserting with the name column, so that the database may
-//          automatically generate a primary key.
             String sql = "delete from message where message_id = ?" ;
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
-            //write preparedStatement's setString method here.
             preparedStatement.setInt(1, message_id);
 
             int deletedRow = preparedStatement.executeUpdate();

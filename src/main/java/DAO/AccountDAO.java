@@ -8,7 +8,7 @@ import java.sql.*;
 /*
  * For DAOs, only CR from CRUD should be accessible.
  * 
- * The AccountDAO class that contains methods to directly manipulate the database.
+ * The AccountDAO class that contains methods related to Accounts to directly manipulate the database.
  */
 public class AccountDAO {
 
