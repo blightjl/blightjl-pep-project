@@ -21,22 +21,18 @@ public class AccountDAO {
         
         try {
             // SQL logic
-            if (!accountExists(account.getUsername(), 0, true)) {
-                String sql_2 = "insert into account(username, password) values (?, ?)";
-                PreparedStatement preparedStatement_2 = connection.prepareStatement(sql_2, Statement.RETURN_GENERATED_KEYS);
-                preparedStatement_2.setString(1, account.getUsername());
-                preparedStatement_2.setString(2, account.getPassword());
-                int updatedRows = preparedStatement_2.executeUpdate();
-                if (updatedRows == 1) {
-                    ResultSet pkeyResultSet = preparedStatement_2.getGeneratedKeys();
-                    if(pkeyResultSet.next()){
-                        int generated_account_id = (int) pkeyResultSet.getLong(1);
-                        System.out.println(generated_account_id);
-                        return new Account(generated_account_id, account.getUsername(), account.getPassword());
-                    }
+            String sql_2 = "insert into account(username, password) values (?, ?)";
+            PreparedStatement preparedStatement_2 = connection.prepareStatement(sql_2, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement_2.setString(1, account.getUsername());
+            preparedStatement_2.setString(2, account.getPassword());
+            int updatedRows = preparedStatement_2.executeUpdate();
+            if (updatedRows == 1) {
+                ResultSet pkeyResultSet = preparedStatement_2.getGeneratedKeys();
+                if(pkeyResultSet.next()){
+                    int generated_account_id = (int) pkeyResultSet.getLong(1);
+                    System.out.println(generated_account_id);
+                    return new Account(generated_account_id, account.getUsername(), account.getPassword());
                 }
-            } else {
-                return null;
             }
         } catch(SQLException e) {
             System.out.println(e.getMessage());
